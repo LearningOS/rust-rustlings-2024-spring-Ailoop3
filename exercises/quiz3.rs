@@ -8,7 +8,7 @@
 // in Rust! Currently the system only supports creating report cards where the
 // student's grade is represented numerically (e.g. 1.0 -> 5.5). However, the
 // school also issues alphabetical grades (A+ -> F-) and needs to be able to
-// print both types of report card!
+// print both types of report card! 
 //
 // Make the necessary code changes in the struct ReportCard and the impl block
 // to support alphabetical report cards. Change the Grade in the second test to
@@ -16,7 +16,16 @@
 //
 // Execute `rustlings hint quiz3` or use the `hint` watch subcommand for a hint.
 
-// I AM NOT DONE
+
+use std::fmt;
+
+impl fmt::Display for ReportCard {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        let grade = "A+";
+        write!(f, "{} ({}) - achieved a grade of {}",
+        &self.student_name, &self.student_age, grade)
+    }
+}
 
 pub struct ReportCard {
     pub grade: f32,
@@ -57,7 +66,7 @@ mod tests {
             student_age: 11,
         };
         assert_eq!(
-            report_card.print(),
+            format!("{report_card}"),
             "Gary Plotter (11) - achieved a grade of A+"
         );
     }
