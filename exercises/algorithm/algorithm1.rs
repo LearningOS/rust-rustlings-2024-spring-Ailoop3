@@ -2,7 +2,6 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
@@ -69,15 +68,47 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
-	{
-		//TODO
-		Self {
-            length: 0,
-            start: None,
-            end: None,
+	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self 
+    where
+    // 因为要比较大小所以要保证类型实现了PartialOrd trait
+    // add()方法需要当前值的所有权，所以需要实现了clone或者copy trait的T类型
+        T: PartialOrd + Copy
+    {
+        let mut merged_list = LinkedList::<T>::new();
+        let mut p1 = list_a.start;
+        let mut p2 = list_b.start;
+
+        // is_some方法判断是否是some类型
+        while p1.is_some() && p2.is_some() {
+            // p1 的类型是Option<NonNull<Node>>>类型
+            // 用unwrap()或take()方法取出Option里的值
+            // as_ptr()将该类型转换为裸指针 通过解引用符号解引用
+
+            let val_a = unsafe {(*p1.unwrap().as_ptr()).val};
+            let val_b = unsafe {(*p2.unwrap().as_ptr()).val};
+
+            if val_a < val_b {
+                merged_list.add(val_a);
+                p1 = unsafe {(*p1.unwrap().as_ptr()).next};
+            } else {
+                merged_list.add(val_b);
+                p2 = unsafe {(*p2.unwrap().as_ptr()).next};
+            }
         }
-	}
+
+        while p1.is_some() {
+            let val_a = unsafe {(*p1.unwrap().as_ptr()).val};
+            merged_list.add(val_a);
+            p1 = unsafe {(*p1.unwrap().as_ptr()).next};
+        }
+
+        while p2.is_some() {
+            let val_b = unsafe {(*p2.unwrap().as_ptr()).val};
+            merged_list.add(val_b);
+            p2 = unsafe {(*p2.unwrap().as_ptr()).next};
+        }
+        merged_list
+    }
 }
 
 impl<T> Display for LinkedList<T>
