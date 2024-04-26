@@ -30,6 +30,19 @@ impl Graph for UndirectedGraph {
     }
     fn add_edge(&mut self, edge: (&str, &str, i32)) {
         //TODO
+        let start = edge.0.to_string();
+        let end = edge.1.to_string();
+        let weight = edge.2;
+
+        self.adjacency_table
+            .entry(start.clone())
+            .or_insert(Vec::new())
+            .push((end.clone(), weight));
+
+        self.adjacency_table
+            .entry(end)
+            .or_insert(Vec::new())
+            .push((start, weight));
     }
 }
 pub trait Graph {
@@ -40,9 +53,7 @@ pub trait Graph {
         //TODO
 		true
     }
-    fn add_edge(&mut self, edge: (&str, &str, i32)) {
-        //TODO
-    }
+    fn add_edge(&mut self, edge: (&str, &str, i32));
     fn contains(&self, node: &str) -> bool {
         self.adjacency_table().get(node).is_some()
     }

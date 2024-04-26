@@ -2,7 +2,6 @@
 	heap
 	This question requires you to implement a binary heap function
 */
-// I AM NOT DONE
 
 use std::cmp::Ord;
 use std::default::Default;
@@ -36,8 +35,27 @@ where
         self.len() == 0
     }
 
-    pub fn add(&mut self, value: T) {
+    pub fn add(&mut self, value: T) 
+    where
+        T: Copy,
+    {
         //TODO
+        self.count += 1;
+        if self.is_empty() {
+            // 0号位置不作为存储位置
+            self.items.push(value);
+            self.items.push(value);
+            return;
+        }
+
+        self.items.push(value);
+        let mut i = self.count;
+        while i > 1 && (self.comparator)(&value, &self.items[i/2]) {
+            self.items[i] = self.items[i/2];
+            i /=  2;
+        }
+
+        self.items[i] = value;
     }
 
     fn parent_idx(&self, idx: usize) -> usize {
@@ -56,10 +74,6 @@ where
         self.left_child_idx(idx) + 1
     }
 
-    fn smallest_child_idx(&self, idx: usize) -> usize {
-        //TODO
-		0
-    }
 }
 
 impl<T> Heap<T>
@@ -79,13 +93,37 @@ where
 
 impl<T> Iterator for Heap<T>
 where
-    T: Default,
+    T: Default+Copy,
 {
     type Item = T;
 
-    fn next(&mut self) -> Option<T> {
+    fn next(&mut self) -> Option<T> 
+    {
         //TODO
-		None
+        if self.is_empty() {
+            return None;
+        }
+
+        let res = self.items[1];
+        // 删除该节点
+        self.items[0] = self.items[self.count];
+        self.count -= 1;
+        let mut i = 1;
+        let mut son = i*2;
+
+        while son <= self.count {
+            if !(self.comparator)(&self.items[son], &self.items[son+1]) {
+                son += 1;
+            } 
+            if (self.comparator)(&self.items[0], &self.items[son]) {break;}
+            else {
+                self.items[i] = self.items[son];
+                i = son;
+                son *= 2;
+            }
+        }
+        self.items[i] = self.items[0];
+		Some(res)
     }
 }
 
